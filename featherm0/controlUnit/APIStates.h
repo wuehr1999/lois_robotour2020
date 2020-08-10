@@ -1,0 +1,6 @@
+#ifndef API_STATES_H
+#define API_STATES_H
+
+#define STATE_JOYDRIVE 0x0000
+#define STATE_HEADINGDRIVE 0x0001
+#endif
