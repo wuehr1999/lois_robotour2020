@@ -5,7 +5,7 @@
 
 #include "Timers.h"
 #include "Motor.h"
-#include "BNO055.h"
+//#include "BNO055.h"
 #include "SonarExtenderI2C.h"
 #include "KVHC100.h"
 
@@ -22,7 +22,8 @@
 #define P_BNO055 1
 
 extern Motor motorLeft, motorRight;
-extern BNO055 bno055;
+//extern BNO055 bno055;
+extern KVHC100 kvhc100;
 
 /***
  * Inits JECCbot hardware

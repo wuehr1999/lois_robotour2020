@@ -1,7 +1,8 @@
 #include "HWDriver.h"
 
 Motor motorLeft, motorRight;
-BNO055 bno055;
+//BNO055 bno055;
+KVHC100 kvhc100;
 
 void HWInit()
 {
@@ -11,7 +12,8 @@ void HWInit()
   motorEnable(&motorLeft, 1);
   motorEnable(&motorRight, 1);
 
-  bno055Init(&bno055, BNO055_ADDRESS, BNO055_PHASE_OFFSET);
+  //bno055Init(&bno055, BNO055_ADDRESS, BNO055_PHASE_OFFSET);
+  kvhc100Init(&kvhc100, BNO055_PHASE_OFFSET);
 
   start1000Hz();
   start16000Hz();
@@ -43,14 +45,18 @@ void interrupt16000Hz()
 
 int getHeading()
 {
-  bno055Update(&bno055);
+  /*bno055Update(&bno055);
   
-  return bno055.heading;  
+  return bno055.heading;  */
+
+  kvhc100Update(&kvhc100);
+  return kvhc100.heading;
 }
 
 int getCompassCal()
 {
-  bno055Update(&bno055);
+/*  bno055Update(&bno055);
   
-  return bno055.calibStat;
+  return bno055.calibStat;*/
+  return 0;
 }

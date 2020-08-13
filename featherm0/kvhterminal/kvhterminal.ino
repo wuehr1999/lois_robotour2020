@@ -10,7 +10,6 @@ void loop() {
     Serial1.print(inByte);
     }
     // read from port 1, send to port 0:
-  Serial1.IrqHandler();
   if (Serial1.available()) {
     char inByte = Serial1.read();
     Serial.print(inByte);
