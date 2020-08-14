@@ -17,5 +17,5 @@ void apiInit()
   apiRegister.availableAccesses[REG_MOTOR_LEFT] = REG_READ_WRITE_ACCESS;
   apiRegister.availableAccesses[REG_EMERGENCY_STOP] = REG_READ_ACCESS;
   apiRegister.availableAccesses[REG_MOTOR_RIGHT] = REG_READ_WRITE_ACCESS;
-  apiRegister.availableAccesses[REG_BNO_HEADING] = REG_READ_ACCESS;
+  apiRegister.availableAccesses[REG_COMPASS_HEADING] = REG_READ_ACCESS;
 }

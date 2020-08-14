@@ -1,8 +1,13 @@
 #include "MoveUtils.h"
 
-void moveHeading(int heading, int speedMax)
+void moveHeading()
 {
-  int error = heading - getHeading();
+  static int esum = 0;
+  
+  int speedMax =  apiRegister.bench[REG_AVG_SPEED];
+  int heading = apiRegister.bench[REG_DEST_HEADING];
+  int compassHeading = apiRegister.bench[REG_COMPASS_HEADING];
+  int error = heading - compassHeading;
 
   if(error > 180)
   {
@@ -13,7 +18,13 @@ void moveHeading(int heading, int speedMax)
     error = error + 360;
   }
 
-  int deltaSpeed = (int)(error * MOVE_PHEADING);
+  esum += error;
+
+  if((heading - MOVE_TOLHEADING) <= compassHeading && compassHeading <= (heading + MOVE_TOLHEADING))
+  {
+    esum = 0;
+  }
+  int deltaSpeed = (int)(error * MOVE_PHEADING) + (int)(esum * MOVE_IHEADING);
 
   int left = speedMax + deltaSpeed;
   int right = speedMax - deltaSpeed;
@@ -35,6 +46,5 @@ void moveHeading(int heading, int speedMax)
   {
    right = speedMax;
   }
-
   setMotors(left, right);
 }

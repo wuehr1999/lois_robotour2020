@@ -17,12 +17,9 @@
 #define MOT2_EN 12
 #define MOT_FREQ 3000
 
-#define BNO055_PHASE_OFFSET 90
-
-#define P_BNO055 1
+#define KVH_PHASE_OFFSET 90
 
 extern Motor motorLeft, motorRight;
-//extern BNO055 bno055;
 extern KVHC100 kvhc100;
 
 /***
@@ -46,10 +43,5 @@ void setMotors(int speedLeft, int speedRight);
  * Returns heading of robot to north ( -180 deg to 180 deg ).
  */
 int getHeading();
-
-/***
- * Returns calibration state of compass ( -100% to 100% ).
- */
-int getCompassCal();
 
 #endif

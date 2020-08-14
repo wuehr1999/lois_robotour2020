@@ -54,6 +54,19 @@ void kvhc100Update(KVHC100 *kvh)
   {
     heading=heading-360;
   }
+
+  int lastheading = kvh->heading;
+  if(lastheading < 0)
+  {
+    lastheading = -lastheading;
+  }
+
+  int p = 1;
+  if(heading < 0)
+  {
+    p = -p;
+    heading = -heading;
+  }
   
-  kvh->heading=heading;  
+  kvh->heading= p * heading + (int)(KVHC100_D * (float)(heading - lastheading));  
 }

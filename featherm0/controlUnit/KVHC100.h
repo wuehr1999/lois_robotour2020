@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#define KVHC100_D 0.1
+
 typedef struct KVHC100
 {
   int phaseOffset;

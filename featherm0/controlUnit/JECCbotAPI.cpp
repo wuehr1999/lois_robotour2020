@@ -61,7 +61,7 @@ APIResponse processCommand(char* command)
 
 void updateJECCbot()
 {
-  apiRegister.bench[REG_BNO_HEADING] = getHeading();
+  apiRegister.bench[REG_COMPASS_HEADING] = getHeading();
   runApiStatemachine();
 }
 
@@ -83,6 +83,6 @@ void runApiStatemachine()
   }
   else if(apiRegister.bench[REG_STATE] == STATE_HEADINGDRIVE)
   {
-    moveHeading(apiRegister.bench[REG_BNO_HEADING], apiRegister.bench[REG_AVG_SPEED]);
+    moveHeading();
   }
 }
