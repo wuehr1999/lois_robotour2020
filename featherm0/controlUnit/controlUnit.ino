@@ -22,7 +22,7 @@ void setup() {
   DOG.begin(DIS_CS,0,0,DIS_A0,DIS_RESET,DOGM132);
   DOG.clear(); 
 
-  Serial.print(processCommand(":04004103ff\n").message);
+  Serial.print(processCommand(":0400410100\n").message);
   Serial.print(processCommand(":040042000f\n").message);
   Serial.print(processCommand(":0400000001\n").message);
 }

@@ -6,7 +6,7 @@
 #include "Timers.h"
 #include "Motor.h"
 //#include "BNO055.h"
-#include "SonarExtenderI2C.h"
+#include <SonarExtenderI2C.h>
 #include "KVHC100.h"
 
 #define MOT1_1 10
@@ -17,10 +17,15 @@
 #define MOT2_EN 12
 #define MOT_FREQ 3000
 
-#define KVH_PHASE_OFFSET 90
+#define SONAR_INT 13
+
+#define KVH_PHASE_OFFSET 0
 
 extern Motor motorLeft, motorRight;
+
 extern KVHC100 kvhc100;
+
+extern
 
 /***
  * Inits JECCbot hardware

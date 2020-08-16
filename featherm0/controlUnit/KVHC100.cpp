@@ -1,5 +1,7 @@
 #include "KVHC100.h"
 
+KVHC100 kvhdefault;
+
 void kvhc100Init(KVHC100 *kvh, int phaseOffset)
 {
   kvh->phaseOffset = phaseOffset;
@@ -21,52 +23,61 @@ void kvhc100Init(KVHC100 *kvh, int phaseOffset)
 
 void kvhc100Update(KVHC100 *kvh)
 {
-  char c = ' ';
-  while(c != '$')
-  {
-    if(Serial1.available())
-    {
-      c = Serial1.read();
-    }
-  }
-  String rawData = "";
-  rawData += c;
-  while(c != '\n')
-  {
-    if(Serial1.available())
-    {
-      c = Serial1.read();
-      rawData += c;
-    }
-  }
-  //$HCHDT,296.2,T*26
-  //Serial.print(rawData);
-  String headingStr = rawData.substring(7, 10);
-  //Serial.println(headingStr);
-  int heading = headingStr.toInt();
+  memcpy(kvh, &kvhdefault, sizeof(KVHC100));
+}
 
-    if(heading > 360)
-  {
-    heading = heading - 360;
-  }
+void SERCOM0_Handler()
+{
+  Serial1.IrqHandler();
+
+  static String kvhString = "";
+  static bool startFound = false;
   
-  if(heading>180)
-  {
-    heading=heading-360;
-  }
+  char c = Serial1.read();
 
-  int lastheading = kvh->heading;
-  if(lastheading < 0)
+  if(c == '$')
   {
-    lastheading = -lastheading;
+    kvhString = c;
+    startFound = true;
   }
-
-  int p = 1;
-  if(heading < 0)
+  else if(c == '\n')
   {
-    p = -p;
-    heading = -heading;
+    if(startFound)
+    {
+      String headingStr = kvhString.substring(7, 10);
+      //Serial.println(headingStr);
+      int heading = headingStr.toInt();
+    
+      if(heading > 360)
+      {
+        heading = heading - 360;
+      }
+      
+      if(heading>180)
+      {
+        heading=heading-360;
+      }
+    
+      int lastheading = kvhdefault.heading;
+      if(lastheading < 0)
+      {
+        lastheading = -lastheading;
+      }
+    
+      int p = 1;
+      if(heading < 0)
+      {
+        p = -p;
+        heading = -heading;
+      }
+      
+      //kvhdefault.heading= p * heading + (int)(KVHC100_D * (float)(heading - lastheading));  
+      kvhdefault.heading = p * (float)(lastheading + KVHC100_D *heading) / (float)(1 + KVHC100_D);
+    }
+    startFound = false;
   }
-  
-  kvh->heading= p * heading + (int)(KVHC100_D * (float)(heading - lastheading));  
+  else
+  {
+    kvhString += c;
+  }
 }
