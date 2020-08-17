@@ -4,6 +4,8 @@ Motor motorLeft, motorRight;
 //BNO055 bno055;
 KVHC100 kvhc100;
 
+SonarExtenderI2C sonar;
+
 void HWInit()
 {
   motorInit(&motorLeft, MOT1_1, MOT1_2, MOT1_EN, MOT_FREQ, 16000);
@@ -12,10 +14,14 @@ void HWInit()
   motorEnable(&motorLeft, 1);
   motorEnable(&motorRight, 1);
 
+  pinMode(EM_STOP, INPUT);
+
   kvhc100Init(&kvhc100, KVH_PHASE_OFFSET);
 
   start1000Hz();
   start16000Hz();
+
+  sonar.begin();
 }
 
 void changeMotorPwmFrequency(int pwmFrequency)
@@ -47,4 +53,16 @@ int getHeading()
 
   kvhc100Update(&kvhc100);
   return kvhc100.heading;
+}
+
+int getEmergencyStop()
+{
+  return digitalRead(EM_STOP);
+}
+
+int getSonar(uint8_t number)
+{
+  sonar.read(number);
+  
+  return sonar.getMeasurementCm(number);
 }

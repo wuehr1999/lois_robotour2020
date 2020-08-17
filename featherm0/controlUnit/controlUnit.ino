@@ -17,14 +17,11 @@ void setup() {
   Serial.begin(115200);
   initJECCbot();
 
-  pinMode(BACKLIGHTPIN,  OUTPUT);   // set backlight pin to output
-  digitalWrite(BACKLIGHTPIN,  HIGH);  // enable backlight pin
   DOG.begin(DIS_CS,0,0,DIS_A0,DIS_RESET,DOGM132);
   DOG.clear(); 
 
-  Serial.print(processCommand(":0400410100\n").message);
-  Serial.print(processCommand(":040042000f\n").message);
-  Serial.print(processCommand(":0400000001\n").message);
+  pinMode(BACKLIGHTPIN, OUTPUT);
+  digitalWrite(BACKLIGHTPIN, HIGH);
 }
 
 void loop() {
@@ -51,5 +48,6 @@ void loop() {
   sprintf(buffer, "%04d", apiRegister.bench[REG_COMPASS_HEADING]);
   DOG.string(0, 0, UBUNTUMONO_B_16, buffer, ALIGN_LEFT);
 
-  
+  sprintf(buffer, "%03d %03d %03d", apiRegister.bench[REG_SONAR_LEFT], apiRegister.bench[REG_SONAR_MIDDLE], apiRegister.bench[REG_SONAR_RIGHT]);
+  DOG.string(0, 2, UBUNTUMONO_B_16, buffer, ALIGN_LEFT);
 }

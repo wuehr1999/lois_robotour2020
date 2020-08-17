@@ -17,7 +17,7 @@
 #define MOT2_EN 12
 #define MOT_FREQ 3000
 
-#define SONAR_INT 13
+#define EM_STOP A4
 
 #define KVH_PHASE_OFFSET 0
 
@@ -25,7 +25,7 @@ extern Motor motorLeft, motorRight;
 
 extern KVHC100 kvhc100;
 
-extern
+extern SonarExtenderI2C sonar;
 
 /***
  * Inits JECCbot hardware
@@ -48,5 +48,9 @@ void setMotors(int speedLeft, int speedRight);
  * Returns heading of robot to north ( -180 deg to 180 deg ).
  */
 int getHeading();
+
+int getEmergencyStop();
+
+int getSonar(uint8_t number);
 
 #endif
