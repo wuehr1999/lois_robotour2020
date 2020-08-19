@@ -4,7 +4,7 @@ from pyroutelib3 import Router
 
 class RobotMap:
 
-    def __init__(self, gridSize, gridScale, initialPositionGPS):
+    def __init__(self, gridSize, gridScale, initialPositionGPS, robotHeading):
         self.grid = OccupancyGrid(gridSize, gridScale)
         self.size = gridSize;
 
@@ -12,6 +12,7 @@ class RobotMap:
         self.obstacleColor = (0, 255, 0);
 
         self.position = initialPositionGPS;
+        self.heading = robotHeading
         self.currentWaypoint = (initialPositionGPS[0], initialPositionGPS[1])
 
         self.updateIteration = 0;
@@ -19,18 +20,21 @@ class RobotMap:
     def setInitialPosition(self, positionGPS):
         self.position = positionGPS
 
-    def updatePosition(self, positionGPS):
+    def updatePosition(self, positionGPS, heading):
 
         coords = (positionGPS[0], positionGPS[1])
-        dist = self.gpsDist(coords) * 100
+        dist = self.gpsDist(coords)
 
-        self.grid.rotate(positionGPS[2]);
+        self.grid.rotate(heading);
         self.grid.scroll(dist)
 
-        self.position = (positionGPS[0], positionGPS[1])
+        self.position = positionGPS
 
         self.grid.save(("%i.jpg" % self.updateIteration))
         self.updateIteration += 1
+
+    def getPosition(self):
+        return self.position
 
     def gpsDist(self, coordinatesGPS):
         la1 = self.position[0]
@@ -48,7 +52,7 @@ class RobotMap:
 
         a = np.sin(dlat / 2.0) * np.sin(dlat / 2.0) + np.cos(latitude1R) * np.cos(latitude2R) * np.sin(dlong / 2.0) * np.sin(dlong / 2.0)
 
-        return 6371000 * 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a));
+        return 6371000 * 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a)) * 100;
 
     def gpsHeading(self, coordinatesGPS):
         la1 = self.position[0]
@@ -71,7 +75,7 @@ class RobotMap:
 
     def setNextWaypoint(self, coordinatesGPS):
         self.currentWaypoint = coordinatesGPS
-        dist = self.gpsDist(coordinatesGPS) * 100
+        dist = self.gpsDist(coordinatesGPS)
         heading = self.gpsHeading(coordinatesGPS)
         coords = (dist, heading)
         self.grid.insertObstacle(coordinates = coords, format = 'polar', color = self.waypointColor, rad = 10)
@@ -84,9 +88,9 @@ class RobotMap:
         return self.grid.getGrid()
 
 if __name__ == '__main__':
-    r = RobotMap(400, 1, (49.001102, 12.828288, 0));
-    r.updatePosition((49.001167, 12.828470, 0))
-    r.updatePosition((49.001219, 12.828049, 2.3))
-    r.updatePosition((49.001241, 12.827968, 0))
+    r = RobotMap(400, 1, (49.001102, 12.828288), 0);
+    r.updatePosition((49.001167, 12.828470), 0)
+    r.updatePosition((49.001219, 12.828049), 2.3)
+    r.updatePosition((49.001241, 12.827968), 0)
     r.setObstacle((100, 0))
     r.setNextWaypoint((49.001241, 12.827968))

@@ -18,6 +18,7 @@ class OSMRouter:
 
         if status == 'success':
             self.waypoints = list(map(self.router.nodeLatLon, route))
+            self.waypoints.append((0, 0))
 
         return  self.waypoints, len(self.waypoints)
 
