@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define KVHC100_D 4
+#define KVHC100_D 0
 
 
 /***Struct for storing KVHC100 data***/

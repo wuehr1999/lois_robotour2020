@@ -6,6 +6,8 @@ KVHC100 kvhc100;
 
 SonarExtenderI2C sonar;
 
+PCF8574 pcf(PCF_ADDRESS);
+
 void HWInit()
 {
   motorInit(&motorLeft, MOT1_1, MOT1_2, MOT1_EN, MOT_FREQ, 16000);
@@ -18,10 +20,15 @@ void HWInit()
 
   kvhc100Init(&kvhc100, KVH_PHASE_OFFSET);
 
+  pcf.pinMode(SONAREXTENDER_INT, INPUT);
+  pcf.pinMode(BARRELHOLDER, INPUT);
+
   start1000Hz();
   start16000Hz();
 
   sonar.begin();
+  delay(1000);
+  sonar.startAutoread();
 }
 
 void changeMotorPwmFrequency(int pwmFrequency)
@@ -39,7 +46,7 @@ void setMotors(int speedLeft, int speedRight)
 
 void interrupt1000Hz()
 {
-  
+
 }
 
 void interrupt16000Hz()
@@ -55,14 +62,22 @@ int getHeading()
   return kvhc100.heading;
 }
 
-int getEmergencyStop()
+int isEmergencyStop()
 {
   return digitalRead(EM_STOP);
 }
 
+int isBarrel()
+{
+  return pcf.digitalRead(BARRELHOLDER);
+}
+
 int getSonar(uint8_t number)
 {
-  sonar.read(number);
-  
+  //sonar.read(number);
+  if(pcf.digitalRead(SONAREXTENDER_INT))
+  {
+    sonar.autoreadCallback();
+  }
   return sonar.getMeasurementCm(number);
 }

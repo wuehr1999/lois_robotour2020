@@ -63,7 +63,7 @@ void updateJECCbot()
 {
   apiRegister.bench[REG_COMPASS_HEADING] = getHeading();
   
-  apiRegister.bench[REG_EMERGENCY_STOP] = getEmergencyStop();
+  apiRegister.bench[REG_EMERGENCY_STOP] = isEmergencyStop();
   
   apiRegister.bench[REG_SONAR_LEFT] = getSonar(3);
   apiRegister.bench[REG_SONAR_MIDDLE] = getSonar(2);

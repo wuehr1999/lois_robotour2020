@@ -8,6 +8,7 @@
 //#include "BNO055.h"
 #include <SonarExtenderI2C.h>
 #include "KVHC100.h"
+#include <PCF8574.h>
 
 #define MOT1_1 10
 #define MOT1_2 9
@@ -21,11 +22,17 @@
 
 #define KVH_PHASE_OFFSET 0
 
+#define PCF_ADDRESS 0x27
+#define SONAREXTENDER_INT P7
+#define BARRELHOLDER P6
+
 extern Motor motorLeft, motorRight;
 
 extern KVHC100 kvhc100;
 
 extern SonarExtenderI2C sonar;
+
+extern PCF8574 pcf;
 
 /***
  * Inits JECCbot hardware
@@ -49,7 +56,9 @@ void setMotors(int speedLeft, int speedRight);
  */
 int getHeading();
 
-int getEmergencyStop();
+int isEmergencyStop();
+
+int isBarrel();
 
 int getSonar(uint8_t number);
 

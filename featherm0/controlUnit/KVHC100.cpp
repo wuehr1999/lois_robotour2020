@@ -32,16 +32,21 @@ void SERCOM0_Handler()
 
   static String kvhString = "";
   static bool startFound = false;
+  static int counter = -1;
   
   char c = Serial1.read();
+  counter ++;
 
   if(c == '$')
   {
+    counter = -1;
     kvhString = c;
     startFound = true;
   }
-  else if(c == '\n')
+  else if(c == '\n' || counter == 10)
   {
+    counter = 0;
+    
     if(startFound)
     {
       String headingStr = kvhString.substring(7, 10);
@@ -71,8 +76,8 @@ void SERCOM0_Handler()
         heading = -heading;
       }
       
-      //kvhdefault.heading= p * heading + (int)(KVHC100_D * (float)(heading - lastheading));  
-      kvhdefault.heading = p * (float)(lastheading + KVHC100_D *heading) / (float)(1 + KVHC100_D);
+      kvhdefault.heading= p * heading + (int)(KVHC100_D * (float)(heading - lastheading));  
+      //kvhdefault.heading = p * (float)(lastheading + KVHC100_D *heading) / (float)(1 + KVHC100_D);
     }
     startFound = false;
   }
