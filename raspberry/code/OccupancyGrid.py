@@ -7,6 +7,7 @@ class OccupancyGrid:
     def __init__(self, sizeCm, scale):
 
         self.scale = scale
+        self.sizeCm = sizeCm
         self.size = (int)(sizeCm * self.scale)
         self.occupancyGrid = np.zeros((self.size, self.size, 3), np.uint8)
 
@@ -39,15 +40,16 @@ class OccupancyGrid:
         return (rho, phi)
 
     def pol2cart(self, coordinates):
-        x = (int)(coordinates[0] * np.cos(coordinates[1]) + self.size / 2)
-        y = (int)(coordinates[0] * np.sin(coordinates[1]) + self.size / 2)
+        x = (int)(coordinates[0] * np.cos(coordinates[1]) + self.sizeCm / 2)
+        y = (int)(coordinates[0] * np.sin(coordinates[1]) + self.sizeCm / 2)
         return (x, y)
 
     def flush(self):
         self.occupancyGrid = np.zeros((self.size, self.size, 3), np.uint8)
 
     def getGrid(self):
-        return self.occupancyGrid
+        grid = self.occupancyGrid.copy()
+        return grid
 
 if __name__ == '__main__':
     g = OccupancyGrid(400, 1)
