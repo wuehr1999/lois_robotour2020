@@ -56,7 +56,7 @@ class ControlUnit:
             #print(100*"*")
             while not self.commandQueue.empty():
                 command = self.commandQueue.get()
-                print(command)
+                #print(command)
                 self.sendCommand(OPCODE_WRITE, command[0], command[1])
                 self.commandQueue.task_done()
             self.update()
@@ -64,7 +64,7 @@ class ControlUnit:
 
     def sendCommandStr(self, commandStr):
         self.ser.write(commandStr.encode("utf-8"))
-        time.sleep(0.1)
+        time.sleep(0.3)
         return self.ser.readline().decode("ISO-8859-1")
 
     def sendCommand(self, opcode, address, data = 0x0000):

@@ -28,7 +28,7 @@ void loop() {
   
   static String serialData = "";
   
-  if(Serial.available())
+  while(Serial.available())
   {
     char c = Serial.read();
     serialData += c;
