@@ -69,6 +69,7 @@ void updateJECCbot()
   apiRegister.bench[REG_SONAR_MIDDLE] = getSonar(2);
   apiRegister.bench[REG_SONAR_RIGHT] = getSonar(1);
 
+  apiRegister.bench[REG_BARREL] = isBarrel();
   runApiStatemachine();
 }
 

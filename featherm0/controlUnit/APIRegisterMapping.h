@@ -12,5 +12,6 @@
 #define REG_SONAR_LEFT 0x50
 #define REG_SONAR_MIDDLE 0x51
 #define REG_SONAR_RIGHT 0x52
+#define REG_BARREL 0x60
 
 #endif

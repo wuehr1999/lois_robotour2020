@@ -64,7 +64,7 @@ int getHeading()
 
 int isEmergencyStop()
 {
-  return digitalRead(EM_STOP);
+  return !digitalRead(EM_STOP);
 }
 
 int isBarrel()

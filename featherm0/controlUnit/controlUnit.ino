@@ -14,7 +14,7 @@ DogGraphicDisplay DOG;
 
 void setup() {
   
-  Serial.begin(115200);
+  Serial.begin(9600);
   initJECCbot();
 
   DOG.begin(DIS_CS,0,0,DIS_A0,DIS_RESET,DOGM132);
