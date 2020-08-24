@@ -12,12 +12,9 @@ DogGraphicDisplay DOG;
 #define DIS_A0 17
 #define DIS_RESET 16
 
-String serialData;
-
 void setup() {
-  serialData="";
   
-  Serial.begin(9600);
+  Serial.begin(115200);
   initJECCbot();
 
   DOG.begin(DIS_CS,0,0,DIS_A0,DIS_RESET,DOGM132);
@@ -25,11 +22,12 @@ void setup() {
 
   pinMode(BACKLIGHTPIN, OUTPUT);
   digitalWrite(BACKLIGHTPIN, HIGH);
-
 }
 
 void loop() {
-
+  while(locked){}
+  locked = true;
+  
   updateJECCbot();
   
   char buffer[50];
@@ -39,25 +37,29 @@ void loop() {
 
   sprintf(buffer, "%03d %03d %03d", apiRegister.bench[REG_SONAR_LEFT], apiRegister.bench[REG_SONAR_MIDDLE], apiRegister.bench[REG_SONAR_RIGHT]);
   DOG.string(0, 2, UBUNTUMONO_B_16, buffer, ALIGN_LEFT);
+  locked = false;
 }
-  
-void serialEventRun()
+
+void serialEvent()
 {
-  if(Serial.available())
-  {
-    char c = Serial.read();
-    serialData += c;
-    if(c == '\n' && serialData.length() > 0)
-    {   
-        char *str = new char[serialData.length()+1];
-        serialData.toCharArray(str, serialData.length()+1);
-        Serial.flush();
-        //locked = true;
-        Serial.print(processCommand(str).message);
-        free(str);
-        //locked = false;
-        serialData = "";
-        Serial.flush();
+  static String serialData = "";
+  //while(Serial.available())
+  //{
+    if(Serial.available())
+    {
+      char c = Serial.read();
+      serialData += c;
+      if(c == '\n' && serialData.length() > 0)
+      {      
+          char *str = new char[serialData.length()+1];
+          serialData.toCharArray(str, serialData.length()+1);
+          Serial.flush();
+          while(locked){}
+          locked = true;
+          Serial.print(processCommand(str).message);
+          locked = false;
+          serialData = "";
+      }
     }
-  }
+  //}
 }

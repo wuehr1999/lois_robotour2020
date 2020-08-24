@@ -60,12 +60,15 @@ class ControlUnit:
                 self.sendCommand(OPCODE_WRITE, command[0], command[1])
                 self.commandQueue.task_done()
             self.update()
+            #time.sleep(0.5)
             #print(100*"*")
 
     def sendCommandStr(self, commandStr):
         self.ser.write(commandStr.encode("utf-8"))
-        time.sleep(0.3)
-        return self.ser.readline().decode("ISO-8859-1")
+        #time.sleep(0.1)
+        data = self.ser.readline(15).decode("ISO-8859-1")
+        #time.sleep(0.1)
+        return data
 
     def sendCommand(self, opcode, address, data = 0x0000):
 
@@ -84,7 +87,7 @@ class ControlUnit:
             pass
         elif ERROR_FORMAT in rec:
             pass
-        else:
+        elif(len(rec) > 9):
             addrStr = rec[1 : 5]
             dataStr = rec[5 : 9]
 
@@ -96,13 +99,10 @@ class ControlUnit:
         return retval
 
     def read(self, address, oldValue):
-        try:
-            rec = self.sendCommand(OPCODE_READ, address)
-        except:
-            pass
+        rec = self.sendCommand(OPCODE_READ, address)
         value = oldValue
         #print(rec)
-        if rec == False or rec is None:
+        if rec is None or rec is False:
             pass
         else:
             value = rec[1]
@@ -135,10 +135,6 @@ class ControlUnit:
         self.commandQueue.put((REG_DEST_HEADING, np.int16(heading)))
 
 if __name__ == "__main__":
-    ecu = ControlUnit("/dev/ttyACM0", 9600)
+    ecu = ControlUnit("/dev/ttyACM3", 9600)
     while(True):
-        for i in range(0xfff):
-            ecu.driveByDutycycle(i, i)
-            print(i)
-            i+=10
-            time.sleep(1)
+        print(ecu.sonarLeft, ecu.sonarMiddle, ecu.sonarRight, ecu.compassHeading)

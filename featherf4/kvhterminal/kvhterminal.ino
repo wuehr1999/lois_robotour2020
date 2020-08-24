@@ -1,6 +1,6 @@
 void setup() {
   Serial.begin(115200);
-  Serial1.begin(4800);
+  Serial3.begin(4800);
 }
 
 void loop() {
@@ -16,21 +16,20 @@ void loop() {
   }*/
 }
 
-void SERCOM0_Handler()
+void serialEvent3()
 {
-  Serial1.IrqHandler();
       // read from port 1, send to port 0:
-  if (Serial1.available()) {
-    char inByte = Serial1.read();
+  if (Serial3.available()) {
+    char inByte = Serial3.read();
     Serial.print(inByte);
   }
 }
 
-void serialEventRun()
+void serialEvent()
 {
       // read from port 0, send to port 1:
     if (Serial.available()) {
     char inByte = Serial.read();
-    Serial1.print(inByte);
+    Serial3.print(inByte);
     }
 }

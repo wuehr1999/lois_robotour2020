@@ -20,17 +20,18 @@ class RobotMap:
     def setInitialPosition(self, positionGPS):
         self.position = positionGPS
 
-    def updatePosition(self, positionGPS, heading):
+    def updatePosition(self, positionGPS, robotHeading):
 
         coords = (positionGPS[0], positionGPS[1])
         dist = self.gpsDist(coords)
 
-        self.grid.rotate(heading);
+        self.grid.rotate(robotHeading - self.heading);
+        self.heading = robotHeading
         self.grid.scroll(dist)
 
         self.position = positionGPS
 
-        self.grid.save(("%i.jpg" % self.updateIteration))
+        #self.grid.save(("%i.jpg" % self.updateIteration))
         self.updateIteration += 1
 
     def getPosition(self):

@@ -1,6 +1,6 @@
 from RobotMap import RobotMap
 from RpLidar import RpLidar
-from osmRouter import OSMRouter
+from OsmRouter import OSMRouter
 from GPSReceiver import GPSReceiver
 from ControlUnit import ControlUnit
 import threading
@@ -32,12 +32,14 @@ class PathPlanner:
             #while self.destination is None:
                 #pass
             self.flushCounter += 1
-            if self.flushTicks > self.flushCounter:
+            if self.flushTicks < self.flushCounter:
                 self.map.flush()
                 self.flushCounter = 0
 
+            self.insertPosition((49.001102, 12.828288), self.ecu.compassHeading * np.pi / 180.0)
             self.insertLidarData()
             self.insertSonarData()
+            time.sleep(0.1)
 
     def insertLidarData(self):
         data = self.lidar.getScan()
@@ -49,7 +51,7 @@ class PathPlanner:
             heading = heading * np.pi / 180.0
 
             dist = data[i]
-            if dist > 0: #and i > 15 and i < 60:
+            if dist > 0 and i > 15 and i < 60:
                 self.map.setObstacle((dist, heading))
                 #print(dist)
         #self.map.grid.save(("lidar.jpg"))
@@ -84,18 +86,19 @@ class PathPlanner:
             self.map.setNextWaypoint(waypoint)
 
 if __name__ == "__main__":
-    robotMap = RobotMap(800, 1, (49.001102, 12.828288), 0);
+    robotMap = RobotMap(800, 1, (49.001102, 12.828288), 130 * np.pi / 180.0);
     lidar = RpLidar("/dev/ttyUSB0")
     osm = OSMRouter("/home/jonas/Documents/englmardorf.osm", "car")
     gps = None #GPSReceiver("/dev/ttyACM0")
     ecu = ControlUnit("/dev/ttyACM0", 9600)
 
-    time.sleep(5)
+    time.sleep(10)
 
     planner = PathPlanner(robotMap, lidar, gps, osm, ecu)
 
     while(True):
         cv2.namedWindow('map', cv2.WINDOW_NORMAL)
         cv2.imshow('map', planner.map.getGrid())
+        time.sleep(0.1)
         cv2.waitKey(1)
 

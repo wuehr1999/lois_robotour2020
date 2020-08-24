@@ -6,19 +6,19 @@ void kvhc100Init(KVHC100 *kvh, int phaseOffset)
 {
   kvh->phaseOffset = phaseOffset;
 
-  Serial1.begin(4800);
+  Serial3.begin(4800);
 
   String kvhInitStr = "s\r";
   String kvhConfigNmeaStr = "=t,0\r";
   String kvhConfigSpeedStr = "=r,600\r";
   String kvhConfigUnitStr = "=i,d\r";
-  Serial1.print(kvhInitStr);
+  Serial3.print(kvhInitStr);
   delay(100);
-  Serial1.print(kvhConfigNmeaStr);
+  Serial3.print(kvhConfigNmeaStr);
   delay(100);
-  Serial1.print(kvhConfigSpeedStr);
+  Serial3.print(kvhConfigSpeedStr);
   delay(100);
-  Serial1.print(kvhConfigUnitStr);
+  Serial3.print(kvhConfigUnitStr);
 }
 
 void kvhc100Update(KVHC100 *kvh)
@@ -26,17 +26,16 @@ void kvhc100Update(KVHC100 *kvh)
   memcpy(kvh, &kvhdefault, sizeof(KVHC100));
 }
 
-void SERCOM0_Handler()
+void serialEvent3()
 {
-  Serial1.IrqHandler();
-
   static String kvhString = "";
   static bool startFound = false;
   static int counter = -1;
 
-  if(Serial1.available())
+  //while(Serial3.available()){
+  if(Serial3.available())
   {
-    char c = Serial1.read();
+    char c = Serial3.read();
     counter ++;
   
     if(c == '$')
@@ -82,7 +81,7 @@ void SERCOM0_Handler()
         //kvhdefault.heading = p * (float)(lastheading + KVHC100_D *heading) / (float)(1 + KVHC100_D);
       }
       startFound = false;
-      Serial1.flush();
+      Serial3.flush();
     }
     else
     {

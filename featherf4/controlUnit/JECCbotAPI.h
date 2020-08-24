@@ -14,7 +14,7 @@
 
 typedef struct APIResponse
 {
-  char message[80];
+  char message[12];
   uint8_t error; 
 }APIResponse;
 

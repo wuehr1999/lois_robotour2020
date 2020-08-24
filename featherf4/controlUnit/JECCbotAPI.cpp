@@ -9,36 +9,30 @@ void initJECCbot()
   HWInit();
 }
 
-void generateResponse(uint16_t address);
-void generateResponse(char *errorMessage);
+void generateResponse(char *resp, uint16_t address);
+void generateResponse(char *resp, char *errorMessage);
 
 void runApiStatemachine();
 
-
-APIResponse response;
-
 APIResponse processCommand(char* command)
 {
-  char accessModeStr[4];
-  char addressStr[6]; 
-  uint8_t accessMode;
-  uint16_t address;
-  uint16_t value;
-  char cmd[15];
-  uint8_t len;
-  char valueStr[6];  
+  uint8_t len = strlen(command) + 1;
+  
+  char cmd[len];
+  strcpy(cmd, command);
 
-  len = strlen(command) + 1;
-  if(len > 0)
-  {
-    strncpy(cmd, command, len);
-  }
-
+  APIResponse response;
 
   response.error = -1;
 
   if(len > 8 && cmd[0] == PROTOCOLL_STARTFLAG && cmd[len-2] == PROTOCOLL_STOPFLAG)
   {
+    char accessModeStr[2];
+    char addressStr[4]; 
+    uint8_t accessMode;
+    uint16_t address;
+    uint16_t value;
+
     strncpy(accessModeStr, &cmd[1], 2);
     strncpy(addressStr, &cmd[3], 4);
     accessMode = atoi(accessModeStr);
@@ -46,23 +40,24 @@ APIResponse processCommand(char* command)
 
     if(REG_READ_ACCESS == accessMode && address < REG_ADDRESS_RANGE && !(REG_WRITE_ACCESS == apiRegister.availableAccesses[address]))
     {
-      generateResponse(address);
+      generateResponse(response.message, address);
     }
-    else if(REG_WRITE_ACCESS == accessMode && address < REG_ADDRESS_RANGE && !(REG_READ_ACCESS == apiRegister.availableAccesses[address]))
-    {  
+    else if(REG_WRITE_ACCESS == accessMode && address < REG_ADDRESS_RANGE && !(REG_READ_ACCESS == apiRegister.availableAccesses[address]) && address < REG_ADDRESS_RANGE && len>9)
+    {
+      char valueStr[len - 9];    
       strncpy(valueStr, &cmd[7], (len - 9)); 
       value = (short)strtol(valueStr, NULL, 16);
       apiRegister.bench[address] = value;
-      generateResponse(address);
+      generateResponse(response.message, address);
     }
     else
     {
-      generateResponse(PROTOCOLL_ERROR_ACCESS);
+      generateResponse(response.message, PROTOCOLL_ERROR_ACCESS);
     }
   }
   else
   {
-    generateResponse(PROTOCOLL_ERROR_FORMAT);
+    generateResponse(response.message, PROTOCOLL_ERROR_FORMAT);
   }
   return response;
 }
@@ -81,14 +76,14 @@ void updateJECCbot()
   runApiStatemachine();
 }
 
-void generateResponse(uint16_t address)
+void generateResponse(char *resp, uint16_t address)
 {
-  sprintf(response.message, "%c%04x%04x%c", PROTOCOLL_STARTFLAG, address, (unsigned short)apiRegister.bench[address], PROTOCOLL_STOPFLAG);
+  sprintf(resp, "%c%04x%04x%c", PROTOCOLL_STARTFLAG, address, (unsigned short)apiRegister.bench[address], PROTOCOLL_STOPFLAG);
 }
 
-void generateResponse(char *errorMessage)
+void generateResponse(char *resp, char *errorMessage)
 {
-  sprintf(response.message, "%c%s%c", PROTOCOLL_STARTFLAG, errorMessage, PROTOCOLL_STOPFLAG);
+  sprintf(resp, "%c%s%c", PROTOCOLL_STARTFLAG, errorMessage, PROTOCOLL_STOPFLAG);
 }
 
 void runApiStatemachine()

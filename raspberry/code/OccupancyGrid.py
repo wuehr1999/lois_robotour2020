@@ -45,7 +45,7 @@ class OccupancyGrid:
         return (x, y)
 
     def flush(self):
-        self.occupancyGrid = np.zeros((self.size, self.size, 3), np.uint8)
+        self.occupancyGrid[0:(int)(self.size / 2), 0:self.size] = (0, 0, 0)
 
     def getGrid(self):
         grid = self.occupancyGrid.copy()
