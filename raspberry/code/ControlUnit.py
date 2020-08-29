@@ -135,6 +135,6 @@ class ControlUnit:
         self.commandQueue.put((REG_DEST_HEADING, np.int16(heading)))
 
 if __name__ == "__main__":
-    ecu = ControlUnit("/dev/ttyACM3", 9600)
+    ecu = ControlUnit("/dev/ttyACM0", 9600)
     while(True):
         print(ecu.sonarLeft, ecu.sonarMiddle, ecu.sonarRight, ecu.compassHeading)

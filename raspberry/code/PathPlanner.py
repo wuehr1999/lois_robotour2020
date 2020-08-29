@@ -10,13 +10,16 @@ import time
 
 class PathPlanner:
 
-    def __init__(self, robotMap, rpLidar, gpsReceiver, osmRouter, controlUnit, waypointSwitchCM = 400, framesToFlush = 100):
+    def __init__(self, robotMap, rpLidar, gpsReceiver, osmRouter, controlUnit, waypointSwitchCM = 400, framesToFlush = 100, visualize = True):
         self.map = robotMap
         self.lidar = rpLidar
         self.gps = gpsReceiver
         self.osm = osmRouter
         self.ecu = controlUnit
         self.waypointSwitch = waypointSwitchCM
+
+        self.show = visualize
+
         self.flushTicks = framesToFlush
 
         self.destination = None
@@ -39,7 +42,6 @@ class PathPlanner:
             self.insertPosition((49.001102, 12.828288), self.ecu.compassHeading * np.pi / 180.0)
             self.insertLidarData()
             self.insertSonarData()
-            time.sleep(0.1)
 
     def insertLidarData(self):
         data = self.lidar.getScan()
@@ -88,7 +90,7 @@ class PathPlanner:
 if __name__ == "__main__":
     robotMap = RobotMap(800, 1, (49.001102, 12.828288), 130 * np.pi / 180.0);
     lidar = RpLidar("/dev/ttyUSB0")
-    osm = OSMRouter("/home/jonas/Documents/englmardorf.osm", "car")
+    osm = None#OSMRouter("/home/jonas/Documents/englmardorf.osm", "car")
     gps = None #GPSReceiver("/dev/ttyACM0")
     ecu = ControlUnit("/dev/ttyACM0", 9600)
 

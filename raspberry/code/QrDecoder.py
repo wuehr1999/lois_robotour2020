@@ -6,8 +6,9 @@ import re
 
 class QrDecoder:
 
-    def __init__(self, camera):
+    def __init__(self, camera, visualize = True):
         self.cam = camera
+        self.show = visualize
 
     def decode(self):
         im = self.cam.getFrame()
@@ -39,6 +40,10 @@ class QrDecoder:
                     latitude = float(fields[1])
                     longitude = float(fields[2])
 
+        if self.show:
+            cv2.namedWindow('qrdecoder', cv2.WINDOW_NORMAL)
+            cv2.imshow('qrdecoder', im)
+            cv2.waitKey(1)
 
         return im, available, latitude, longitude
 
@@ -50,6 +55,3 @@ if __name__ == '__main__':
         im, available, latitude, longitude = dec.decode()
         if available:
             print(latitude, longitude)
-        cv2.namedWindow('qrdecoder', cv2.WINDOW_NORMAL)
-        cv2.imshow('qrdecoder', im)
-        cv2.waitKey(1)
