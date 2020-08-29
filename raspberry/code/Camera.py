@@ -7,7 +7,7 @@ import time
 
 class Camera:
 
-    def __init__(self, imageResolution = (640, 480), frameRate = 10, undistort = True, kVector = None, dVector = None, showImage = False):
+    def __init__(self, imageResolution = (640, 480), frameRate = 5, undistort = True, kVector = None, dVector = None, showImage = False):
         self.camera = PiCamera()
         self.resolution = imageResolution
         self.camera.resolution = (self.resolution[0], self.resolution[1])
@@ -53,6 +53,9 @@ class Camera:
 
     def getFrame(self):
         return self.copy
+
+    def getResolution(self):
+        return self.resolution
 
 if __name__ == '__main__':
     cam = Camera(showImage=True)
