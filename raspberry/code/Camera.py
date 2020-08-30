@@ -7,7 +7,7 @@ import time
 
 class Camera:
 
-    def __init__(self, imageResolution = (640, 480), frameRate = 5, undistort = True, kVector = None, dVector = None, showImage = False):
+    def __init__(self, imageResolution = (640, 480), frameRate = 10, undistort = True, kVector = None, dVector = None, showImage = False):
         self.camera = PiCamera()
         self.resolution = imageResolution
         self.camera.resolution = (self.resolution[0], self.resolution[1])
@@ -31,7 +31,11 @@ class Camera:
         self.thread.start()
 
         time.sleep(2)
-        print("Camera started...")
+        print(100*'*')
+        print("Starting camera...")
+        print(self.resolution)
+        print("Framerate: %i" % self.camera.framerate)
+        print(100*'*')
 
     def run(self):
         for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):

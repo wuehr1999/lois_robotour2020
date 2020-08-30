@@ -13,7 +13,6 @@ class QrDecoder:
     def decode(self):
         im = self.cam.getFrame()
 
-        available = False
         latitude = None
         longitude = None
 
@@ -41,17 +40,30 @@ class QrDecoder:
                     longitude = float(fields[2])
 
         if self.show:
-            cv2.namedWindow('qrdecoder', cv2.WINDOW_NORMAL)
-            cv2.imshow('qrdecoder', im)
+            cv2.namedWindow('QrDecoder', cv2.WINDOW_NORMAL)
+            cv2.imshow('QrDecoder', im)
             cv2.waitKey(1)
 
-        return im, available, latitude, longitude
+        return latitude, longitude
+
+    def getCoordinates(self):
+        latitude = None
+        longitude = None
+        coords = None
+        latitude, longitude = self.decode()
+
+        if latitude is not None and longitude is not None:
+            coords = (latitude, longitude)
+            print(100*'*')
+            print("Found coordinates from QR code:")
+            print(coords)
+            print(100*'*')
+        return coords
 
 if __name__ == '__main__':
     cam = Camera()
     dec = QrDecoder(cam)
 
     while(True):
-        im, available, latitude, longitude = dec.decode()
-        if available:
-            print(latitude, longitude)
+        coords = dec.getCoordinates()
+        print(coords)

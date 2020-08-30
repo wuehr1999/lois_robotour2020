@@ -6,7 +6,7 @@ import time
 
 class RoadDetector:
 
-    def __init__(self, camera, computeResolution = (100, 100), trainareaSizeX = 0.2, trainareaSizeY = 0.2, trainareaCenter = (0.5, 0.8), damping = 0.5, thresholdmultiplier = 1.0, maxHSVCompares = 30, horizonLine = 0.4, unwarpPixels = 0.1, mapDimensions = (120, 200), visualize = True):
+    def __init__(self, camera, computeResolution = (78, 78), trainareaSizeX = 0.2, trainareaSizeY = 0.2, trainareaCenter = (0.5, 0.8), damping = 0.5, thresholdmultiplier = 1.0, maxHSVCompares = 30, horizonLine = 0.4, unwarpPixels = 0.1, mapDimensions = (120, 200), visualize = True):
         self.cam = camera
         self.resolution = computeResolution
         self.horizon = (int)(self.resolution[1] * horizonLine)
@@ -42,7 +42,7 @@ class RoadDetector:
         #print(self.unwarpSrc, self.unwarpDst)
         self.map = np.zeros((self.dimensions[0], self.dimensions[1], 3), np.uint8)
 
-        self.notDriveables = []
+        self.objects = []
 
     def detect(self):
         self.fetchHSV()
@@ -51,6 +51,7 @@ class RoadDetector:
         self.unwarpImage()
         if self.show:
             self.visualize()
+        return self.objects
 
     def visualize(self):
         self.win.clear()
@@ -60,10 +61,10 @@ class RoadDetector:
         self.createRGB()
         self.image = cv2.line(self.image, (0, self.horizon), (self.resolution[0], self.horizon), (0, 0, 255), 2)
         self.image = cv2.rectangle(self.image, (self.trainareaStartX, self.trainareaStartY), (self.trainareaStopX, self.trainareaStopY), (255, 0, 0), 2)
-        cv2.namedWindow('Camera', cv2.WINDOW_NORMAL)
-        cv2.imshow('Camera', self.image)
-        cv2.namedWindow('Map', cv2.WINDOW_NORMAL)
-        cv2.imshow('Map', self.map)
+        cv2.namedWindow('Road', cv2.WINDOW_NORMAL)
+        cv2.imshow('Road', self.image)
+        cv2.namedWindow('Birdeye', cv2.WINDOW_NORMAL)
+        cv2.imshow('Birdeye', self.map)
         histogram = cv2.imread('histogram.png')
         cv2.namedWindow('Histogram', cv2.WINDOW_NORMAL)
         cv2.imshow('Histogram', histogram)
@@ -71,7 +72,7 @@ class RoadDetector:
 
     def fetchHSV(self):
         self.image = None
-        self.image = cam.getFrame()
+        self.image = self.cam.getFrame()
         self.image = cv2.resize(self.image, self.resolution)
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
 
@@ -119,14 +120,16 @@ class RoadDetector:
         self.map = np.zeros((self.dimensions[0], self.dimensions[1], 3), np.uint8)
         self.map = cv2.warpPerspective(self.image, self.transformMat, self.dimensions)
 
-        self.notDriveables.clear()
+        self.objects.clear()
         for x in range(0, self.dimensions[0]):
             for y in range(0, self.dimensions[1]):
                 pixel = self.map[y, x]
                 if not (pixel[0] == 60 and pixel[1] == 255 and pixel[2] ==255):
-                    self.notDriveables.append((x, y))
+                    tmpX = x - self.dimensions[0] / 2
+                    tmpY = self.dimensions[1] - y
+                    #print(tmpX, x)
+                    self.objects.append((int(tmpX), int(tmpY)))
         #print(self.notDriveables)
-
 
 if __name__ == '__main__':
     cam = Camera()

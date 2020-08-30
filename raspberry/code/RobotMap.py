@@ -71,8 +71,8 @@ class RobotMap:
 
         return np.arctan2(y, x);
 
-    def setObstacle(self, coordinatesPOLAR):
-        self.grid.insertObstacle(coordinates = coordinatesPOLAR, format = 'polar', color = self.obstacleColor, rad = 10)
+    def setObstacle(self, coordinates, coordinatesFormat, radius = 10):
+        self.grid.insertObstacle(coordinates = coordinates, format = coordinatesFormat, color = self.obstacleColor, rad = radius)
 
     def setNextWaypoint(self, coordinatesGPS):
         self.currentWaypoint = coordinatesGPS

@@ -8,7 +8,7 @@ class RpLidar:
         self.lidar = RPLidar(None, port)
 
         print (100*"*")
-        print ("Starting RpLidar")
+        print ("Starting RpLidar...")
         print(self.lidar.info)
         print(self.lidar.health)
         print (100*"*")

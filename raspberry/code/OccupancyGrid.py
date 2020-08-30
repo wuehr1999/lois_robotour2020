@@ -13,10 +13,14 @@ class OccupancyGrid:
 
     def insertObstacle(self, coordinates = (0, 0), format = 'cartesian', color = (0, 0, 255), rad = 1):
 
+        coords = None
+
         if(format == 'polar'):
             coordinates = (coordinates[0], coordinates[1] - np.pi)
             coordinates = self.pol2cart(coordinates)
-        coords = (coordinates[0] * (int)(1 / self.scale), coordinates[1] * (int)(1 / self.scale))
+            coords = (coordinates[0] * (int)(1 / self.scale), coordinates[1] * (int)(1 / self.scale))
+        else:
+            coords = (coordinates[0] * (int)(1 / self.scale) + (int)(self.size / 2), -coordinates[1] * (int)(1 / self.scale) + (int)(self.size / 2))
         rad *= (int)(1 / self.scale)
 
         if(coords[0] < self.size and coords[0] > 0 and coords[1] < self.size and coords[1] > 0):
@@ -45,7 +49,7 @@ class OccupancyGrid:
         return (x, y)
 
     def flush(self):
-        self.occupancyGrid[0:(int)(self.size / 2), 0:self.size] = (0, 0, 0)
+        self.occupancyGrid[0:(int)(self.size / 2) + 1, 0:self.size] = (0, 0, 0)
 
     def getGrid(self):
         grid = self.occupancyGrid.copy()
