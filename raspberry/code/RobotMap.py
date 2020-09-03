@@ -13,7 +13,7 @@ class RobotMap:
 
         self.position = initialPositionGPS;
         self.heading = robotHeading
-        self.currentWaypoint = (initialPositionGPS[0], initialPositionGPS[1])
+        self.currentWaypoint = None
 
         self.updateIteration = 0;
 
@@ -83,7 +83,7 @@ class RobotMap:
 
     def flush(self):
         self.grid.flush()
-        self.setNextWaypoint(self.currentWaypoint)
+        #self.setNextWaypoint(self.currentWaypoint)
 
     def getGrid(self):
         return self.grid.getGrid()

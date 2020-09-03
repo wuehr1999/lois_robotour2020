@@ -10,6 +10,7 @@ class OccupancyGrid:
         self.sizeCm = sizeCm
         self.size = (int)(sizeCm * self.scale)
         self.occupancyGrid = np.zeros((self.size, self.size, 3), np.uint8)
+        self.copy = None
 
     def insertObstacle(self, coordinates = (0, 0), format = 'cartesian', color = (0, 0, 255), rad = 1):
 
@@ -35,7 +36,7 @@ class OccupancyGrid:
         self.occupancyGrid = imutils.rotate(self.occupancyGrid, angle)
 
     def save(self, name):
-        cv2.imwrite(name, self.occupancyGrid);
+        cv2.imwrite(name, self.occupancyGrid)
 
     def cart2pol(self, coordinates):
         coords = (coordinates[0] - self.size / 2, coordinates[1] - self.size / 2)
@@ -52,8 +53,8 @@ class OccupancyGrid:
         self.occupancyGrid[0:(int)(self.size / 2) + 1, 0:self.size] = (0, 0, 0)
 
     def getGrid(self):
-        grid = self.occupancyGrid.copy()
-        return grid
+        #grid = self.occupancyGrid.copy()
+        return self.occupancyGrid #grid
 
 if __name__ == '__main__':
     g = OccupancyGrid(400, 1)

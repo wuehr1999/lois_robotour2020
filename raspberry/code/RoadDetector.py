@@ -6,7 +6,7 @@ import time
 
 class RoadDetector:
 
-    def __init__(self, camera, computeResolution = (78, 78), trainareaSizeX = 0.2, trainareaSizeY = 0.2, trainareaCenter = (0.5, 0.8), damping = 0.5, thresholdmultiplier = 1.0, maxHSVCompares = 30, horizonLine = 0.4, unwarpPixels = 0.1, mapDimensions = (120, 200), visualize = True):
+    def __init__(self, camera, computeResolution = (66, 66), trainareaSizeX = 0.2, trainareaSizeY = 0.2, trainareaCenter = (0.5, 0.8), damping = 0.5, thresholdmultiplier = 1.0, maxHSVCompares = 30, horizonLine = 0.4, unwarpPixels = 0.1, mapDimensions = (150, 200), visualize = True):
         self.cam = camera
         self.resolution = computeResolution
         self.horizon = (int)(self.resolution[1] * horizonLine)
@@ -54,20 +54,20 @@ class RoadDetector:
         return self.objects
 
     def visualize(self):
-        self.win.clear()
-        self.win.plot(self.hueCounts)
-        self.win.plot([0, 180], [self.countThreshold, self.countThreshold])
-        self.fig.savefig("histogram.png")
+        #self.win.clear()
+        #self.win.plot(self.hueCounts)
+        #self.win.plot([0, 180], [self.countThreshold, self.countThreshold])
+        #self.fig.savefig("histogram.png")
         self.createRGB()
         self.image = cv2.line(self.image, (0, self.horizon), (self.resolution[0], self.horizon), (0, 0, 255), 2)
         self.image = cv2.rectangle(self.image, (self.trainareaStartX, self.trainareaStartY), (self.trainareaStopX, self.trainareaStopY), (255, 0, 0), 2)
         cv2.namedWindow('Road', cv2.WINDOW_NORMAL)
         cv2.imshow('Road', self.image)
-        cv2.namedWindow('Birdeye', cv2.WINDOW_NORMAL)
-        cv2.imshow('Birdeye', self.map)
-        histogram = cv2.imread('histogram.png')
-        cv2.namedWindow('Histogram', cv2.WINDOW_NORMAL)
-        cv2.imshow('Histogram', histogram)
+        #cv2.namedWindow('Birdeye', cv2.WINDOW_NORMAL)
+        #cv2.imshow('Birdeye', self.map)
+        #histogram = cv2.imread('histogram.png')
+        #cv2.namedWindow('Histogram', cv2.WINDOW_NORMAL)
+        #cv2.imshow('Histogram', histogram)
         cv2.waitKey(1)
 
     def fetchHSV(self):

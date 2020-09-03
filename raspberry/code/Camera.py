@@ -7,7 +7,7 @@ import time
 
 class Camera:
 
-    def __init__(self, imageResolution = (640, 480), frameRate = 10, undistort = True, kVector = None, dVector = None, showImage = False):
+    def __init__(self, imageResolution = (640, 480), frameRate = 3, undistort = True, kVector = None, dVector = None, showImage = False):
         self.camera = PiCamera()
         self.resolution = imageResolution
         self.camera.resolution = (self.resolution[0], self.resolution[1])
@@ -50,10 +50,10 @@ class Camera:
                 self.image = cv2.remap(self.image, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 
             self.copy = self.image.copy()
-            if self.show:
-                cv2.namedWindow('camera', cv2.WINDOW_NORMAL)
-                cv2.imshow("camera", self.image)
-                key = cv2.waitKey(1)
+            #if self.show:
+            #    cv2.namedWindow('camera', cv2.WINDOW_NORMAL)
+            #    cv2.imshow("camera", self.image)
+            #    key = cv2.waitKey(1)
 
     def getFrame(self):
         return self.copy
