@@ -3,7 +3,7 @@ import cv2
 
 class Floodfill:
 
-    def __init__(self, fieldNr = 21, driveableThreshold = 0.5):
+    def __init__(self, fieldNr = 49, driveableThreshold = 0.25):
 
         self.fieldNr = fieldNr
         self.threshold = driveableThreshold
@@ -34,7 +34,6 @@ class Floodfill:
         cv2.waitKey(1)
 
     def fill(self, startPos):
-        lastValue = 0
         destinationFound = False
         stack = []
 
@@ -46,28 +45,23 @@ class Floodfill:
         pixel[2] = self.waypointColor[2]
         self.fields[startPos[1], startPos[0]]= pixel
 
-        pixel = self.fields[15, 5]
+        pixel = self.fields[10, 22]
         pixel[0] = self.waypointColor[0]
         pixel[1] = self.waypointColor[1]
         pixel[2] = self.waypointColor[2]
-        self.fields[15, 5] = pixel
+        self.fields[10, 22] = pixel
 
-        #for x in range(0, self.fieldNr):
-        #    for y in range(0, self.fieldNr):
-        #        pixel = self.fields[y, x]
-        #        pixel[0] = 255
-        #        self.fields[y, x] = pixel
+        stack.append((self.startPos[0], self.startPos[1], 0))
 
-        stack.append(startPos)
-
-        destPos = self.startPos
+        destPos = None
 
         while len(stack) > 0:
             #print(len(stack))
             #print(stack)
-            position = stack.pop()
-            x = position[0]
-            y = position[1]
+            field = stack.pop()
+            x = field[0]
+            y = field[1]
+            fieldValue = field[2]
             if x >= 0 and x < self.fieldNr and y >= 0 and y < self.fieldNr:
                 pixel = self.fields[y, x]
                 #print(pixel)
@@ -75,51 +69,60 @@ class Floodfill:
                 if pixel[1] >= self.obstacleColor[1] * self.threshold and pixel[2] >= self.obstacleColor[2] * self.threshold :
                     driveable = False
                     #print(pixel)
-                elif pixel[1] == self.waypointColor[1] and pixel[2] == self.waypointColor[2] and x != self.startPos[0] and y != self.startPos[1]:
-                    driveable = False
-                    #print(pixel)
-                    destinationFound = True
+                elif pixel[1] == self.waypointColor[1] and pixel[2] == self.waypointColor[2] and not (x == self.startPos[0] and y == self.startPos[1]):
                     destPos = (x, y)
-                    #print(destinationFound)
+                    driveable = False
+                    destinationFound = True
 
                 if driveable and not destinationFound:
                     value = values[x, y]
-                    newValue = lastValue + 1
                     #print(lastValue)
-                    if newValue <= value:
-                        lastValue = newValue
+                    if fieldValue < value and value == self.fieldNr * self.fieldNr:
                         #pixel[0] = 255#(int)(newValue * 127 / (self.fieldNr * self.fieldNr)) + 127
                         #self.fields[y, x] = pixel
-                        values[x, y] = newValue
+                        values[x, y] = fieldValue
                         #print(self.fields[y, x])
-                        stack.append((x - 1, y - 1))
-                        stack.append((x - 1, y + 1))
-                        stack.append((x - 1, y))
-                        stack.append((x + 1, y - 1))
-                        stack.append((x + 1, y + 1))
-                        stack.append((x + 1, y))
-                        stack.append((x, y + 1))
-                        stack.append((x, y - 1))
 
-                #else:
-                #    print(driveable, destinationFound, lastValue)
+                        stack.append((x - 1, y, fieldValue + 1))
+                        stack.append((x + 1, y, fieldValue + 1))
+                        stack.append((x, y + 1, fieldValue + 1))
+                        stack.append((x, y - 1, fieldValue + 1))
+                        #stack.append((x + 1, y - 1, fieldValue + 1))
+                        #stack.append((x + 1, y + 1, fieldValue + 1))
+                        #stack.append((x - 1, y - 1, fieldValue + 1))
+                        #stack.append((x - 1, y + 1, fieldValue + 1))
+
         path = []
 
         x = destPos[0]
         y = destPos[1]
+        #print(x, y)
         #print(values)
-        while( x != self.startPos[0] and y != self.startPos[1]):
+        while(not(x == self.startPos[0] and y == self.startPos[1]) and destinationFound):
+
+            if x < 1:
+                x = 1
+            elif x > self.fieldNr - 2:
+                x = self.fieldNr - 2
+
+            if y < 1:
+                y = 1
+            elif y > self.fieldNr - 2:
+                y = self.fieldNr - 2
+
             valuesAround = []
             valuesAround.append(values[x, y + 1])
             valuesAround.append(values[x, y - 1])
             valuesAround.append(values[x + 1, y])
             valuesAround.append(values[x - 1, y])
-            valuesAround.append(values[x - 1, y - 1])
-            valuesAround.append(values[x + 1, y - 1])
-            valuesAround.append(values[x - 1, y + 1])
-            valuesAround.append(values[x + 1, y + 1])
-
+            #valuesAround.append(values[x - 1, y - 1])
+            #valuesAround.append(values[x + 1, y - 1])
+            #valuesAround.append(values[x - 1, y + 1])
+            #valuesAround.append(values[x + 1, y + 1])
+            #print(x, y)
             next = valuesAround.index(min(valuesAround))
+            #print(valuesAround)
+            #print(next)
 
             if next == 0:
                 y += 1
@@ -147,36 +150,6 @@ class Floodfill:
             self.fields[y, x] = pixel
             path.append((x, y))
         #print(path)
-
-        #for x in range(0, self.fieldNr):
-        #    for y in range(0, self.fieldNr):
-        #        pixel = self.fields[y, x]
-        #        if pixel[0] == 255:
-        #            pixel[0] = 0
-        #        self.fields[y, x] = pixel
-
-    #def fill(self, position, lastValue):
-    #    x = position[0]
-    #    y = position[1]
-    #    if x > 0 and x < self.fieldNr and y > 0 and y < self.fieldNr:
-    #        pixel = self.fields[y, x]
-    #        driveable = True
-    #        if pixel[0] >= self.obstacleColor[0] * self.threshold and pixel[1] >= self.obstacleColor[1] * self.threshold and pixel[2] >= self.obstacleColor[2] * self.threshold :
-    #            driveable = False
-    #        elif pixel[0] == self.waypointColor[0] and pixel[1] == self.waypointColor[1] and pixel[2] == self.waypointColor[2]:
-    #            driveable = False
-    #            self.destinationFound = True
-    #
-    #        if driveable and not self.destinationFound:
-    #            value = pixel[0]
-    #            newValue = lastValue + 1
-    #            if newValue > value:
-    #                pixel[0] = newValue
-    #                self.fields[y, x] = pixel
-    #                self.fill((x + 1, y), newValue)
-    #                self.fill((x - 1 , y), newValue)
-    #                self.fill((x, y + 1), newValue)
-    #                self.fill((x, y -1), newValue)
 
 if __name__ == '__main__':
     ff = Floodfill()
