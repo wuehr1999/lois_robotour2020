@@ -14,6 +14,7 @@ class RpLidar:
         print (100*"*")
 
         self.measurements = [0] * 360;
+        self.available = False
 
         self.threadRunning = True
         self.thread = threading.Thread(target = self.run)
@@ -29,11 +30,14 @@ class RpLidar:
                 for (_, angle, distance) in scan:
                     scanData[min([359, floor(angle)])] = distance / 10
                 self.measurements = scanData.copy()
+                self.available = True
                 #print(scanData)
         except:
             pass
     def getScan(self):
-        return self.measurements
+        av = self.available
+        self.available = False
+        return av, self.measurements
 
     def stop(self):
         '''Stops RpLidar device'''

@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 import time
+import multiprocessing as mp
 
 class RoadDetector:
 
@@ -61,8 +62,8 @@ class RoadDetector:
         self.createRGB()
         self.image = cv2.line(self.image, (0, self.horizon), (self.resolution[0], self.horizon), (0, 0, 255), 2)
         self.image = cv2.rectangle(self.image, (self.trainareaStartX, self.trainareaStartY), (self.trainareaStopX, self.trainareaStopY), (255, 0, 0), 2)
-        cv2.namedWindow('Road', cv2.WINDOW_NORMAL)
-        cv2.imshow('Road', self.image)
+        #cv2.namedWindow('Road', cv2.WINDOW_NORMAL)
+        #cv2.imshow('Road', self.image)
         #cv2.namedWindow('Birdeye', cv2.WINDOW_NORMAL)
         #cv2.imshow('Birdeye', self.map)
         #histogram = cv2.imread('histogram.png')
@@ -122,7 +123,7 @@ class RoadDetector:
 
         self.objects.clear()
         for x in range(0, self.dimensions[0]):
-            for y in range(0, self.dimensions[1]):
+            for y in range(0, self.dimensions[1] - 10):
                 pixel = self.map[y, x]
                 if not (pixel[0] == 60 and pixel[1] == 255 and pixel[2] ==255):
                     tmpX = x - self.dimensions[0] / 2

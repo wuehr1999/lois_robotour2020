@@ -10,10 +10,11 @@ import threading
 import numpy as np
 import cv2
 import time
+import multiprocessing as mp
 
 class PathPlanner:
 
-    def __init__(self, robotMap, rpLidar, gpsReceiver, osmRouter, controlUnit, cameraProcessor, floodFill, waypointSwitchCM = 400, framesToFlush = 1, visualize = True):
+    def __init__(self, robotMap, rpLidar, gpsReceiver, osmRouter, controlUnit, cameraProcessor, floodFill, waypointSwitchCM = 400, framesToFlush = 50, visualize = True):
         self.map = robotMap
         self.lidar = rpLidar
         self.gps = gpsReceiver
@@ -30,10 +31,17 @@ class PathPlanner:
         self.destination = None
         self.flushCounter = 0
 
+        self.camInserted = False
+        self.available = False
+
         self.threadRunning = True
         self.thread = threading.Thread(target = self.run)
         self.thread.start()
         self.copy = None
+
+        self.thread2 = threading.Thread(target = self.runAlgorithm)
+        self.thread2.start()
+
 
     def run(self):
         '''Worker thread for measuring and visualisation'''
@@ -41,10 +49,10 @@ class PathPlanner:
             #while self.destination is None:
                 #pass
             
-            #self.insertPosition((49.001102, 12.828288), self.ecu.compassHeading * np.pi / 180.0)
+            self.insertPosition((49.001102, 12.828288), self.ecu.compassHeading * np.pi / 180.0)
             self.insertLidarData()
             #print("lidar")
-            self.insertSonarData()
+            #self.insertSonarData()
             #print("sonar")
             self.insertCameraData()
             #print("cam")
@@ -52,6 +60,8 @@ class PathPlanner:
             #self.map.setNextWaypoint((49.001102, 12.828288))
 
             #self.map.grid.save("map.png")
+            img = self.map.getGrid()
+            cv2.imwrite("map.jpg", img)
             if self.show:
                 cv2.namedWindow('map', cv2.WINDOW_NORMAL)
                 img = self.map.getGrid()
@@ -60,28 +70,40 @@ class PathPlanner:
                 # time.sleep(0.1)
                 cv2.waitKey(1)
 
-            ff.planRoute(self.map)
+            #ff.planRoute(self.map)
 
             self.flushCounter += 1
             if self.flushTicks < self.flushCounter:
                 self.map.flush()
                 self.flushCounter = 0
+                self.camInserted = False
+
+            self.available = True
+
+    def runAlgorithm(self):
+        while (self.threadRunning):
+            if self.available: # and self.camInserted:
+                trajectory = ff.planRoute(self.map.copy())
+                self.available = False
+                print(trajectory * 180.0 / np.pi)
 
     def insertLidarData(self):
-        data = self.lidar.getScan()
-        for i in range(360):
-            heading = i + 45
-            if(heading >= 360):
-                heading -= 360
+        available, data = self.lidar.getScan()
+        if available:    
+            for i in range(360):
+                heading = i + 45
+                if(heading >= 360):
+                    heading -= 360
 
-            heading = heading * np.pi / 180.0
+                heading = heading * np.pi / 180.0
 
-            dist = data[i]
-            if dist > 0 and i > 15 and i < 60:
-                self.map.setObstacle((dist, heading), 'polar')
-                #print(dist)
-        #self.map.grid.save(("lidar.jpg"))
-        #self.map.flush()
+                dist = data[i]
+                if dist > 0 and i > 15 and i < 60:
+                    self.map.setObstacle((dist, heading), 'polar')
+                    #print(dist)
+                #print("lidar inserted")
+            #self.map.grid.save(("lidar.jpg"))
+            #self.map.flush()
 
     def insertSonarData(self):
         for i in range(30, 70):
@@ -103,6 +125,9 @@ class PathPlanner:
             #print(available, len(data))
             for coord in data:
                 self.map.setObstacle(coord, 'cartesian', 1)
+            print("cam inserted")
+            self.camInserted = True
+
 
     def insertPosition(self, coordinatesGPS, heading):
         self.map.updatePosition(coordinatesGPS, heading)
@@ -128,12 +153,12 @@ if __name__ == "__main__":
     osm = None#OSMRouter("/home/jonas/Documents/englmardorf.osm", "car")
     gps = None #GPSReceiver("/dev/ttyACM0")
     ecu = ControlUnit("/dev/ttyACM0", 9600)
-    robotMap = RobotMap(800, 1, (49.001102, 12.828288), 130 * np.pi / 180.0);
-    ff = Floodfill()
+    robotMap = RobotMap(400, 1, (49.001102, 12.828288), 130 * np.pi / 180.0);
+    ff = Floodfill(25, visualize = True)
 
     time.sleep(5)
 
-    planner = PathPlanner(robotMap, lidar, gps, osm, ecu, proc, ff)
+    planner = PathPlanner(robotMap, lidar, gps, osm, ecu, proc, ff, visualize = False)
 
     while(True):
         #cv2.namedWindow('map', cv2.WINDOW_NORMAL)

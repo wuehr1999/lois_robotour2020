@@ -7,7 +7,7 @@ import time
 class CameraProcessor:
 
     def __init__(self, visualize = True):
-        self.cam = Camera(showImage = True)
+        self.cam = Camera(frameRate = 10, showImage = True)
 
         self.show = visualize
 

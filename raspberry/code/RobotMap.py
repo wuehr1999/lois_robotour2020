@@ -88,6 +88,20 @@ class RobotMap:
     def getGrid(self):
         return self.grid.getGrid()
 
+    def copy(self):
+        map = RobotMap(1, 1, 1, 1)
+        map.size = self.size
+        map.waypointColor = self.waypointColor
+        map.obstacleColor = self.obstacleColor
+        map.position = self.position
+        map.heading = self.heading
+        map.currentWaypoint = self.currentWaypoint
+        map.updateIteration = self.updateIteration
+        map.grid = OccupancyGrid(self.grid.sizeCm, self.grid.scale)
+        map.grid.occupancyGrid = self.grid.occupancyGrid.copy()
+
+        return map
+
 if __name__ == '__main__':
     r = RobotMap(400, 1, (49.001102, 12.828288), 0);
     r.updatePosition((49.001167, 12.828470), 0)
