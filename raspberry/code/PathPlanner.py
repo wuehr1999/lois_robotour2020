@@ -114,8 +114,10 @@ class PathPlanner:
                     self.state = self.STATE_WAITFORDESTINATION
                 else:
                     heading = ff.planRoute(planMap)
+                    self.ecu.driveByHeading((int)(heading * 180.0 / np.pi), 30)
                 self.available = False
                 #print(heading * 180.0 / np.pi)
+
 
     def insertLidarData(self):
         available, data = self.lidar.getScan()

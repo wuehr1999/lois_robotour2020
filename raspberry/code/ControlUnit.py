@@ -130,6 +130,7 @@ class ControlUnit:
         self.commandQueue.join()
 
     def driveByHeading(self, heading, avgSpeed):
+        print(heading, avgSpeed)
         self.commandQueue.put((REG_STATE, STATE_HEADINGDRIVE))
         self.commandQueue.put((REG_AVG_SPEED, np.int16(avgSpeed)))
         self.commandQueue.put((REG_DEST_HEADING, np.int16(heading)))
