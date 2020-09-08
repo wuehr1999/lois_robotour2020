@@ -68,11 +68,11 @@ class Floodfill:
         pixel[2] = self.waypointColor[2]
         self.fields[startPos[1], startPos[0]]= pixel
 
-        pixel = self.fields[5, 11]
-        pixel[0] = self.waypointColor[0]
-        pixel[1] = self.waypointColor[1]
-        pixel[2] = self.waypointColor[2]
-        self.fields[5, 11] = pixel
+        #pixel = self.fields[5, 11]
+        #pixel[0] = self.waypointColor[0]
+        #pixel[1] = self.waypointColor[1]
+        #pixel[2] = self.waypointColor[2]
+        #self.fields[5, 11] = pixel
 
         #stack.append((self.startPos[0], self.startPos[1], 0))
         fifo.put((self.startPos[0], self.startPos[1], 0))

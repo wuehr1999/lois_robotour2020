@@ -6,7 +6,7 @@ class RobotMap:
 
     def __init__(self, gridSize, gridScale, initialPositionGPS, robotHeading):
         self.grid = OccupancyGrid(gridSize, gridScale)
-        self.size = gridSize;
+        self.size = gridSize
 
         self.waypointColor = (0, 0, 255);
         self.obstacleColor = (0, 255, 0);
@@ -81,9 +81,15 @@ class RobotMap:
     def setNextWaypoint(self, coordinatesGPS):
         self.currentWaypoint = coordinatesGPS
         dist = self.gpsDist(coordinatesGPS)
+        if dist >= self.size:
+            dist = self.size / 2 - 1
         heading = self.gpsHeading(coordinatesGPS)
         coords = (dist, heading)
+        #print(coords)
         self.grid.insertObstacle(coordinates = coords, format = 'polar', color = self.waypointColor, rad = 10)
+
+    def getWaypointDist(self):
+        return self.gpsDist(self.currentWaypoint)
 
     def flush(self):
         self.grid.flush()

@@ -24,13 +24,15 @@ class PathPlanner:
         self.filler = floodFill
         self.waypointSwitch = waypointSwitchCM
 
+        #self.planMap = None
+
         self.show = visualize
 
         self.STATE_WAITFORDESTINATION = 0
         self.STATE_DRIVE = 1
 
-        #self.state = self.STATE_WAITFORDESTINATION
-        self.state = self.STATE_DRIVE
+        self.state = self.STATE_WAITFORDESTINATION
+        #self.state = self.STATE_DRIVE
 
 
         self.flushTicks = framesToFlush
@@ -59,8 +61,10 @@ class PathPlanner:
                 destCoords = None
                 while not available and destCoords is None:
                     available, destCoords = self.cam.getData()
+                self.destination = destCoords
                 self.cam.setMode(self.cam.MODE_ROADDETECT)
                 self.state = self.STATE_DRIVE
+                time.sleep(5)
 
             elif self.STATE_DRIVE == self.state:
                 self.insertPosition(self.gps.coordinates, self.ecu.compassHeading * np.pi / 180.0)
@@ -92,14 +96,26 @@ class PathPlanner:
                     self.flushCounter = 0
                     self.camInserted = False
 
+                # time.sleep(0.1)
+
                 self.available = True
+
 
     def runAlgorithm(self):
         while (self.threadRunning):
             if self.available: # and self.camInserted:
-                trajectory = ff.planRoute(self.map.copy())
+
+                #print(self.destination)
+                planMap = self.map.copy()
+                planMap.setNextWaypoint(self.destination)
+                dist = planMap.getWaypointDist()
+                #print(dist)
+                if dist <= self.waypointSwitch:
+                    self.state = self.STATE_WAITFORDESTINATION
+                else:
+                    heading = ff.planRoute(planMap)
                 self.available = False
-                #print(trajectory * 180.0 / np.pi)
+                #print(heading * 180.0 / np.pi)
 
     def insertLidarData(self):
         available, data = self.lidar.getScan()
