@@ -47,8 +47,7 @@ class QrDecoder:
         return latitude, longitude
 
     def getCoordinates(self):
-        latitude = None
-        longitude = None
+
         coords = None
         latitude, longitude = self.decode()
 

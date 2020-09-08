@@ -25,8 +25,12 @@ class RobotMap:
         coords = (positionGPS[0], positionGPS[1])
         dist = self.gpsDist(coords)
 
+        gpsHeading = self.gpsHeading(coords)
+        #print(gpsHeading * 180.0 / np.pi)
+        #self.grid.rotate(gpsHeading)
         self.grid.rotate(robotHeading - self.heading);
         self.heading = robotHeading
+        #print(dist)
         self.grid.scroll(dist)
 
         self.position = positionGPS

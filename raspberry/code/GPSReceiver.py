@@ -4,12 +4,13 @@ import time
 
 class GPSReceiver:
 
-    def __init__(self, port, baud):
+    def __init__(self, port, baud, damping = 0.1):
 
         self.ser = serial.Serial(port, baud, timeout = 1)
 
         self.time = None
         self.coordinates = None
+        self.D = damping
 
         self.threadRunning = True
         self.thread = threading.Thread(target = self.run)
@@ -64,7 +65,7 @@ class GPSReceiver:
         sec = int(secondsStr)
 
         self.time = time.struct_time((year, mon, day, hour, min, sec, -1, -1, -1))
-        print(self.time)
+        #print(self.time)
 
         lat = float(latDegStr) + float(latMinStr) / 60
         if 'S' == nsField[0]:
@@ -74,8 +75,11 @@ class GPSReceiver:
         if 'W' == weField[0]:
             lon = -lon
 
-        self.coordinates = (lat, lon)
-        print(self.coordinates)
+        if self.coordinates is None:
+            self.coordinates = (lat, lon)
+
+        self.coordinates = (((1 - self.D) * self.coordinates[0] + self.D * lat), ((1 - self.D) * self.coordinates[1] + self.D * lon))
+        #print(self.coordinates)
 
 if __name__ == "__main__":
-    gps = GPSReceiver("/dev/ttyACM3", 9600)
+    gps = GPSReceiver("/dev/ttyACM1", 9600)

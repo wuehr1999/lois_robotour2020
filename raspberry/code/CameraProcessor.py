@@ -16,7 +16,7 @@ class CameraProcessor:
 
         self.mode = self.MODE_QRDECODE
 
-        self.qrDecoder = QrDecoder(camera = self.cam, visualize = self.show)
+        self.qrDecoder = QrDecoder(camera = self.cam, visualize = True)
         self.roadDetector = RoadDetector(camera = self.cam, visualize = self.show)
 
         self.threadRunning = True
@@ -41,7 +41,10 @@ class CameraProcessor:
                 self.data = self.qrDecoder.getCoordinates()
 
             if self.data is not None:
-                self.copy = self.data.copy()
+                if self.mode == self.MODE_ROADDETECT:
+                    self.copy = self.data.copy()
+                else:
+                    self.copy = self.data
                 self.available = True
 
     def getData(self):
